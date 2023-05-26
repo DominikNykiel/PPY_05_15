@@ -47,7 +47,7 @@ def load_data():
     data = fetch_data()
     treeview.delete(*treeview.get_children())
     for row in data:
-        treeview.insert("", "end", values=(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7],row[8]))
+        treeview.insert("", "end", values=(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
 
 
 def open_new_student_window():
@@ -116,7 +116,7 @@ add_new_book_button.pack(side="left")
 
 
 def open_details_window(event):
-    def deleteBook():
+    def deleteStudent():
         # Usuwanie:
         student_id = (id_entry.get())
         conn = sqlite3.connect('studentdb')
@@ -128,16 +128,21 @@ def open_details_window(event):
         load_data()
 
     def update_book():
-        new_title = title_entry.get()
-        new_author = author_entry.get()
-        new_price = float(price_entry.get())
-        new_category = category_entry.get()
+        new_email = email_entry.get()
+        new_name = name_entry.get()
+        new_surname = surname_entry.get()
+        new_project = project_entry.get()
+        new_l1 = l1_entry.get()
+        new_l2 = l2_entry.get()
+        new_l3 = l3_entry.get()
+        new_grade = grade_entry.get()
         same_id = int(id_entry.get())
-        conn = sqlite3.connect('bookstore.db')
+        conn = sqlite3.connect('studentdb')
         mycursor = conn.cursor()
 
-        mycursor.execute("UPDATE books SET title=?, author=?, price=?, category=? WHERE id=?",
-                         (new_title, new_author, new_price, new_category, same_id))
+        mycursor.execute("UPDATE student SET email=?, studentname=?, studentsurname=?, project_points=?,l1_points=? ,"
+                         "l2_points=? ,l3_points=? ,finalgrade=? WHERE id=?",
+                         (new_email, new_name, new_surname, new_project, new_l1, new_l2, new_l3, new_grade, same_id))
         conn.commit()
         mycursor.close()
         conn.close()
@@ -159,31 +164,59 @@ def open_details_window(event):
     id_entry.insert(0, item_values[0])
     id_entry.config(state="disabled")  # Uniemożliwienie zmiany id
     id_entry.pack()
-    title_label = ttk.Label(details_window, text="Tytuł:")
-    title_label.pack()
-    title_entry = ttk.Entry(details_window)
-    title_entry.insert(0, item_values[1])
-    title_entry.pack()
-    author_label = ttk.Label(details_window, text="Autor:")
-    author_label.pack()
-    author_entry = ttk.Entry(details_window)
-    author_entry.insert(0, item_values[2])
-    author_entry.pack()
-    price_label = ttk.Label(details_window, text="Cena:")
-    price_label.pack()
-    price_entry = ttk.Entry(details_window)
-    price_entry.insert(0, item_values[3])
-    price_entry.pack()
-    category_label = ttk.Label(details_window, text="Kategoria:")
-    category_label.pack()
-    category_entry = ttk.Entry(details_window)
-    category_entry.insert(0, item_values[4])
-    category_entry.pack()
 
-    delete_button = tk.Button(details_window, text="usun ksiazke", command=deleteBook)
+    email_label = ttk.Label(details_window, text="Email:")
+    email_label.pack()
+    email_entry = ttk.Entry(details_window)
+    email_entry.insert(0, item_values[1])
+    email_entry.pack()
+
+    name_label = ttk.Label(details_window, text="Imie:")
+    name_label.pack()
+    name_entry = ttk.Entry(details_window)
+    name_entry.insert(0, item_values[2])
+    name_entry.pack()
+
+    surname_label = ttk.Label(details_window, text="Nazwisko")
+    surname_label.pack()
+    surname_entry = ttk.Entry(details_window)
+    surname_entry.insert(0, item_values[3])
+    surname_entry.pack()
+
+    project_label = ttk.Label(details_window, text="Punky z projektu")
+    project_label.pack()
+    project_entry = ttk.Entry(details_window)
+    project_entry.insert(0, item_values[4])
+    project_entry.pack()
+
+    l1_label = ttk.Label(details_window, text="Punky z listy 1")
+    l1_label.pack()
+    l1_entry = ttk.Entry(details_window)
+    l1_entry.insert(0, item_values[4])
+    l1_entry.pack()
+
+    l2_label = ttk.Label(details_window, text="Punky z listy 2")
+    l2_label.pack()
+    l2_entry = ttk.Entry(details_window)
+    l2_entry.insert(0, item_values[4])
+    l2_entry.pack()
+
+    l3_label = ttk.Label(details_window, text="Punky z listy 3")
+    l3_label.pack()
+    l3_entry = ttk.Entry(details_window)
+    l3_entry.insert(0, item_values[4])
+    l3_entry.pack()
+
+    grade_label = ttk.Label(details_window, text="Ocena")
+    grade_label.pack()
+    grade_entry = ttk.Entry(details_window)
+    grade_entry.insert(0, item_values[4])
+    grade_entry.pack()
+
+    delete_button = tk.Button(details_window, text="Usun studenta", command=deleteStudent)
     delete_button.pack()
 
-    updateButton = ttk.Button(details_window, text="Zaktualizuj", command=update_book)
+    updateButton = ttk.Button(details_window, text="Zaktualizuj studenta", command=update_book)
     updateButton.pack()
 
 
