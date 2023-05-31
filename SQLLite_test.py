@@ -7,24 +7,30 @@ root.title("Book Store")
 
 
 def fetch_data():
-    conn = sqlite3.connect('studentdb')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS student
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  email TEXT,
-                  studentname TEXT,
-                  studentsurname TEXT,
-                    project_points REAL,
-                    l1_points REAL,
-                    l2_points REAL,
-                    l3_points REAL,
-                    finalgrade REAL
-                  )''')
-    c.execute("SELECT * FROM student")
-    result = c.fetchall()
-    c.close()
-    conn.close()
-    return result
+    try:
+        conn = sqlite3.connect('studentdb')
+        cursor = conn.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS student
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    email TEXT,
+                    studentname TEXT,
+                    studentsurname TEXT,
+                        project_points REAL,
+                        l1_points REAL,
+                        l2_points REAL,
+                        l3_points REAL,
+                        finalgrade REAL
+                    )''')
+        cursor.execute("SELECT * FROM student")
+        result = cursor.fetchall()
+        return result
+    except sqlite3.Error as e:
+        print(f"Error: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 treeview = ttk.Treeview(root)
@@ -96,14 +102,20 @@ def open_new_student_window():
         new_l2 = l2_entry.get()
         new_l3 = l3_entry.get()
         new_grade = grade_entry.get()
-        conn = sqlite3.connect('studentdb')
-        c = conn.cursor()
-        sql = "INSERT INTO student (email ,studentname ,studentsurname ,project_points ,l1_points ,l2_points ,l3_points ,finalgrade) VALUES (?,?,?,?,?,?,?,?)"
-        params = (new_email, new_name, new_surname, new_project, new_l1, new_l2, new_l3, new_grade)
-        c.execute(sql, params)
-        conn.commit()
-        c.close()
-        conn.close()
+        try:
+            conn = sqlite3.connect('studentdb')
+            cursor = conn.cursor()
+            sql = "INSERT INTO student (email ,studentname ,studentsurname ,project_points ,l1_points ,l2_points ,l3_points ,finalgrade) VALUES (?,?,?,?,?,?,?,?)"
+            params = (new_email, new_name, new_surname, new_project, new_l1, new_l2, new_l3, new_grade)
+            cursor.execute(sql, params)
+            conn.commit()
+        except sqlite3.Error as e:
+            print(f"Error: {e}")
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
         load_data()
         new_window.destroy()
 
@@ -119,15 +131,22 @@ def open_details_window(event):
     def deleteStudent():
         # Usuwanie:
         student_id = (id_entry.get())
-        conn = sqlite3.connect('studentdb')
-        c = conn.cursor()
-        c.execute("DELETE FROM student WHERE id=?", (student_id,))
-        conn.commit()
-        c.close()
-        conn.close()
+        try:
+            conn = sqlite3.connect('studentdb')
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM student WHERE id=?", (student_id,))
+            conn.commit()
+        except sqlite3.Error as e:
+            print(f"Error: {e}")
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
         load_data()
+        details_window.destroy()
 
-    def update_book():
+    def update_student():
         new_email = email_entry.get()
         new_name = name_entry.get()
         new_surname = surname_entry.get()
@@ -137,15 +156,21 @@ def open_details_window(event):
         new_l3 = l3_entry.get()
         new_grade = grade_entry.get()
         same_id = int(id_entry.get())
-        conn = sqlite3.connect('studentdb')
-        mycursor = conn.cursor()
+        try:
+            conn = sqlite3.connect('studentdb')
+            mycursor = conn.cursor()
 
-        mycursor.execute("UPDATE student SET email=?, studentname=?, studentsurname=?, project_points=?,l1_points=? ,"
+            mycursor.execute("UPDATE student SET email=?, studentname=?, studentsurname=?, project_points=?,l1_points=? ,"
                          "l2_points=? ,l3_points=? ,finalgrade=? WHERE id=?",
                          (new_email, new_name, new_surname, new_project, new_l1, new_l2, new_l3, new_grade, same_id))
-        conn.commit()
-        mycursor.close()
-        conn.close()
+            conn.commit()
+        except sqlite3.Error as e:
+            print(f"Error: {e}")
+        finally:
+            if mycursor:
+                mycursor.close()
+            if conn:
+                conn.close()
         load_data()
 
     # Pobranie zaznaczonego elementu
@@ -183,41 +208,41 @@ def open_details_window(event):
     surname_entry.insert(0, item_values[3])
     surname_entry.pack()
 
-    project_label = ttk.Label(details_window, text="Punky z projektu")
+    project_label = ttk.Label(details_window, text="Punkty z projektu")
     project_label.pack()
     project_entry = ttk.Entry(details_window)
     project_entry.insert(0, item_values[4])
     project_entry.pack()
 
-    l1_label = ttk.Label(details_window, text="Punky z listy 1")
+    l1_label = ttk.Label(details_window, text="Punkty z listy 1")
     l1_label.pack()
     l1_entry = ttk.Entry(details_window)
-    l1_entry.insert(0, item_values[4])
+    l1_entry.insert(0, item_values[5])
     l1_entry.pack()
 
     l2_label = ttk.Label(details_window, text="Punky z listy 2")
     l2_label.pack()
     l2_entry = ttk.Entry(details_window)
-    l2_entry.insert(0, item_values[4])
+    l2_entry.insert(0, item_values[6])
     l2_entry.pack()
 
     l3_label = ttk.Label(details_window, text="Punky z listy 3")
     l3_label.pack()
     l3_entry = ttk.Entry(details_window)
-    l3_entry.insert(0, item_values[4])
+    l3_entry.insert(0, item_values[7])
     l3_entry.pack()
 
     grade_label = ttk.Label(details_window, text="Ocena")
     grade_label.pack()
     grade_entry = ttk.Entry(details_window)
-    grade_entry.insert(0, item_values[4])
+    grade_entry.insert(0, item_values[8])
     grade_entry.pack()
 
     delete_button = tk.Button(details_window, text="Usun studenta", command=deleteStudent)
     delete_button.pack()
 
-    updateButton = ttk.Button(details_window, text="Zaktualizuj studenta", command=update_book)
-    updateButton.pack()
+    update_button = ttk.Button(details_window, text="Zaktualizuj studenta", command=update_student)
+    update_button.pack()
 
 
 treeview.bind("<Double-1>", open_details_window)
